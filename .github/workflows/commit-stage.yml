@@ -1,11 +1,10 @@
 name: Commit Stage
-
 on: push
 
 jobs:
   build:
     name: Build and Test
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     permissions:
       contents: read
@@ -22,14 +21,19 @@ jobs:
           java-version: 21
           cache: gradle
 
+      - name: Build, unit tests and integration tests
+        run: |
+          chmod +x gradlew
+          ./gradlew build
+
       - name: Code vulnerability scanning
         uses: anchore/scan-action@v3
         id: scan
         with:
-          path: ${{ github.workspace }}
+          path: "${{ github.workspace }}"
           fail-build: false
           severity-cutoff: high
-          output: sarif
+          output-format: sarif
           output-file: scan-results.sarif
 
       - name: Upload vulnerability report
@@ -37,7 +41,3 @@ jobs:
         if: always()
         with:
           sarif_file: scan-results.sarif
-
-      - name: Build, unit tests and integration tests
-        run: |
-           gradlew.bat build
