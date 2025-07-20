@@ -26,18 +26,17 @@ jobs:
           chmod +x gradlew
           ./gradlew build
 
+      - name: List build artifacts
+        run: ls -R ${{ github.workspace }}/build/libs
+
       - name: Code vulnerability scanning
         uses: anchore/scan-action@v3
         id: scan
-        env:
-          GRYPE_OUTPUT_FILE: ${{ github.workspace }}/scan-results.sarif
         with:
           path: "${{ github.workspace }}/build/libs"
-          targets: "dir:"
           fail-build: false
           severity-cutoff: high
           output-format: sarif
-          debug: true
 
       - name: Upload vulnerability report
         if: always() && steps.scan.outcome == 'success'
