@@ -24,15 +24,27 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew build
+          ./gradlew clean build
 
       - name: List build artifacts
         run: ls -R ${{ github.workspace }}/build/libs
 
       - name: Run grype scanner
         run: |
+          # створюємо файл наперед, щоб upload-sarif не падав
+          touch ${{ github.workspace }}/scan-results.sarif
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b . v0.74.4
           ./grype dir:${{ github.workspace }}/build/libs -o sarif > ${{ github.workspace }}/scan-results.sarif || true
+
+      - name: Debug SARIF file
+        if: always()
+        run: |
+          echo "==== build/libs content ===="
+          ls -l ${{ github.workspace }}/build/libs || true
+          echo "==== SARIF file ===="
+          ls -l ${{ github.workspace }}/scan-results.sarif || true
+          echo "==== SARIF preview ===="
+          head -n 50 ${{ github.workspace }}/scan-results.sarif || true
 
       - name: Upload vulnerability report
         if: always()
