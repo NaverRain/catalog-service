@@ -22,10 +22,10 @@ public class BookDataLoader {
     @EventListener(ApplicationReadyEvent.class)
     public void loadBookTestData(){
         bookRepository.deleteAll();
-        var book1 = Book.of("1234567890", "The Breaking Bad",
-                "Travis Scott", 131.42);
-        var book2 = Book.of("1231231234", "Northern Lights",
-                "Lyra Silvestar", 9.34);
+        var book1 = Book.of("1234567893", "The Breaking Bad",
+                "Travis Scott", 131.42, "MumbaiTD");
+        var book2 = Book.of("1234567892", "Northern Lights",
+                "Lyra Silvestar", 9.34, "Mumba");
         bookRepository.saveAll(List.of(book1, book2));
     }
 

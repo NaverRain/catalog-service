@@ -19,8 +19,33 @@ class CatalogServiceApplicationTests {
 	private WebTestClient webTestClient;
 
 	@Test
+	void whenGetRequestWithIdThenBookReturned(){
+		var bookIsbn = "1233211232";
+		var bookToCreate = Book.of(bookIsbn, "Title13", "Author42", 44.32 , "Campus");
+
+		Book expectedBook = webTestClient
+				.post()
+				.uri("/books")
+				.bodyValue(bookToCreate)
+				.exchange()
+				.expectStatus().isCreated()
+				.expectBody(Book.class).value(book -> assertThat(book).isNotNull())
+				.returnResult().getResponseBody();
+
+		webTestClient
+				.get()
+				.uri("/books/" + bookIsbn)
+				.exchange()
+				.expectStatus().is2xxSuccessful()
+				.expectBody(Book.class).value(actualBook -> {
+					assertThat(actualBook).isNotNull();
+					assertThat(actualBook.isbn()).isEqualTo(expectedBook.isbn());
+				});
+	}
+
+	@Test
 	void whenPostRequestThenBookCreated(){
-		var expectedBook = Book.of("1234567890", "Title", "Author", 9.99);
+		var expectedBook = Book.of("1234767863", "Title", "Author", 9.99, "Mumba");
 
 		webTestClient
 				.post()
@@ -28,13 +53,65 @@ class CatalogServiceApplicationTests {
 				.bodyValue(expectedBook)
 				.exchange()
 				.expectStatus().isCreated()
-				.expectBody(Book.class).value(
-						actualBook -> {
-							assertThat(actualBook).isNotNull();
-							assertThat(actualBook.isbn()).isEqualTo(expectedBook.isbn());
-						}
-				);
+				.expectBody(Book.class).value(actualBook -> {
+					assertThat(actualBook).isNotNull();
+					assertThat(actualBook.isbn()).isEqualTo(expectedBook.isbn());
+				});
+	}
 
+
+	@Test
+	void whenPutRequestThenBookUpdated() {
+		var bookIsbn = "1847567892";
+		var bookToCreate = Book.of(bookIsbn, "Title","Author", 93.3, "Mumba");
+		Book createdBook = webTestClient
+				.post()
+				.uri("/books")
+				.bodyValue(bookToCreate)
+				.exchange()
+				.expectStatus().isCreated()
+				.expectBody(Book.class).value(book -> assertThat(book).isNotNull())
+				.returnResult().getResponseBody();
+		var bookToUpdate = new Book(createdBook.id(), createdBook.isbn(), createdBook.title(), createdBook.author(), 7.95,
+				createdBook.publisher(), createdBook.createdDate(), createdBook.lastModifiedDate(), createdBook.version());
+
+		webTestClient
+				.put()
+				.uri("/books/" + bookIsbn)
+				.bodyValue(bookToUpdate)
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody(Book.class).value(actualBook -> {
+					assertThat(actualBook).isNotNull();
+					assertThat(actualBook.price()).isEqualTo(bookToUpdate.price());
+				});
+	}
+
+	@Test
+	void whenDeleteRequestThenBookDeleted(){
+		var bookIsbn = "1231233211";
+		var bookToCreate = Book.of(bookIsbn, "Title31", "Author312", 32.31, "Asd Publisher");
+
+		webTestClient
+				.post()
+				.uri("/books")
+				.bodyValue(bookToCreate)
+				.exchange()
+				.expectStatus().isCreated();
+
+		webTestClient
+				.delete()
+				.uri("/books/" + bookIsbn)
+				.exchange()
+				.expectStatus().isNoContent();
+
+		webTestClient
+				.get()
+				.uri("/books/" + bookIsbn)
+				.exchange()
+				.expectStatus().isNotFound()
+				.expectBody(String.class).value(errorMessage ->
+						assertThat(errorMessage).isEqualTo("Book with ISBN " + bookIsbn + " is not found!"));
 	}
 
 

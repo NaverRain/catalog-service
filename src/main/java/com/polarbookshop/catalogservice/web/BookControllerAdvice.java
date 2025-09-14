@@ -1,6 +1,6 @@
 package com.polarbookshop.catalogservice.web;
 
-import com.polarbookshop.catalogservice.domain.BookAlreadyExistException;
+import com.polarbookshop.catalogservice.domain.BookAlreadyExistsException;
 import com.polarbookshop.catalogservice.domain.BookNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -21,9 +21,9 @@ public class BookControllerAdvice {
         return ex.getMessage();
     }
 
-    @ExceptionHandler(BookAlreadyExistException.class)
+    @ExceptionHandler(BookAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    String bookExistHandler(BookAlreadyExistException ex){
+    String bookExistHandler(BookAlreadyExistsException ex){
         return ex.getMessage();
     }
 
