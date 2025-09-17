@@ -1,6 +1,8 @@
 package com.polarbookshop.catalogservice;
 
 import com.polarbookshop.catalogservice.domain.Book;
+import com.polarbookshop.catalogservice.domain.BookRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +19,14 @@ class CatalogServiceApplicationTests {
 
 	@Autowired
 	private WebTestClient webTestClient;
+
+	@Autowired
+	BookRepository bookRepository;
+
+	@BeforeEach
+	void setup() {
+		bookRepository.deleteAll();
+	}
 
 	@Test
 	void whenGetRequestWithIdThenBookReturned(){
@@ -111,12 +121,8 @@ class CatalogServiceApplicationTests {
 				.exchange()
 				.expectStatus().isNotFound()
 				.expectBody(String.class).value(errorMessage ->
-						assertThat(errorMessage).isEqualTo("Book with ISBN " + bookIsbn + " is not found!"));
+						assertThat(errorMessage).isEqualTo("The book with ISBN " + bookIsbn + " was not found!"));
 	}
 
-
-	@Test
-	void contextLoads() {
-	}
 
 }

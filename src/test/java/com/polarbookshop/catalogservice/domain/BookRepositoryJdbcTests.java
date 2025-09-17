@@ -18,8 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJdbcTest
 @Import(DataConfig.class)
 @AutoConfigureTestDatabase(
-        replace = AutoConfigureTestDatabase.Replace.NONE
-)
+        replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("integration")
 public class BookRepositoryJdbcTests {
 
@@ -29,10 +28,11 @@ public class BookRepositoryJdbcTests {
     @Autowired
     private JdbcAggregateTemplate jdbcAggregateTemplate;
 
+
     @Test
     void findBookByIsbnWhenExisting() {
-        var bookIsbn = "1234561237";
-        var book = Book.of(bookIsbn, "Title", "Author", 12.90, "Polarsophia");
+        var bookIsbn = "1111111111";
+        var book = Book.of(bookIsbn, "Title 1", "Author 1", 12.90, "Polarsophia");
         jdbcAggregateTemplate.insert(book);
 
         Optional<Book> actualBook = bookRepository.findByIsbn(bookIsbn);
@@ -43,8 +43,8 @@ public class BookRepositoryJdbcTests {
 
     @Test
     void findAllBooks(){
-        var book1 = Book.of("1231231231", "Title 1", "Author 1", 123.132, "Publisher 1");
-        var book2 = Book.of("3213213213", "Title 2", "Author 2", 123.123, "Publisher 2");
+        var book1 = Book.of("2222222222", "Title 1", "Author 1", 123.132, "Publisher 1");
+        var book2 = Book.of("3333333333", "Title 2", "Author 2", 123.123, "Publisher 2");
 
         jdbcAggregateTemplate.insert(book1);
         jdbcAggregateTemplate.insert(book2);
@@ -58,8 +58,8 @@ public class BookRepositoryJdbcTests {
 
     @Test
     void deleteByIsbn(){
-        var bookIsbn = "1233212211";
-        var bookToCreate = Book.of(bookIsbn, "Title", "Author", 123.44, "Publisher");
+        var bookIsbn = "4444444444";
+        var bookToCreate = Book.of(bookIsbn, "Title 4", "Author 4", 123.44, "Publisher 4");
 
         var persistedBook = jdbcAggregateTemplate.insert(bookToCreate);
 
@@ -69,8 +69,8 @@ public class BookRepositoryJdbcTests {
 
     @Test
     void existsByIsbnWhenExisting(){
-        var bookIsbn = "1233211232";
-        var bookToCreate = Book.of(bookIsbn, "Title", "Author", 213.32, "Publisher");
+        var bookIsbn = "5555555555";
+        var bookToCreate = Book.of(bookIsbn, "Title 5", "Author 5", 213.32, "Publisher 5");
         jdbcAggregateTemplate.insert(bookToCreate);
 
         boolean isExisting = bookRepository.existsByIsbn(bookIsbn);
@@ -80,7 +80,7 @@ public class BookRepositoryJdbcTests {
 
     @Test
     void existsByIsbnWhenNotExisting(){
-        boolean isExisting = bookRepository.existsByIsbn("1231231232");
+        boolean isExisting = bookRepository.existsByIsbn("6666666666");
 
         assertThat(isExisting).isFalse();
     }
