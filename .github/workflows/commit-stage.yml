@@ -24,7 +24,7 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew clean build -Dspring.profiles.active=integration -Dspring.cloud.config.enabled=false
+          ./gradlew clean bootJar -Dspring.profiles.active=integration -Dspring.cloud.config.enabled=false
           echo "=== Searching for jars ==="
           find . -name "*.jar" || true
 
