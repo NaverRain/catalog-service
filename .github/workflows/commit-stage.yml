@@ -24,7 +24,7 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew clean build -Dspring.profiles.active=integration -Dspring.cloud.config.enabled=false || true
+          ./gradlew clean build -Dspring.profiles.active=integration -Dspring.cloud.config.enabled=false
 
       - name: List build artifacts
         run: ls -R ${{ github.workspace }}/build/libs
