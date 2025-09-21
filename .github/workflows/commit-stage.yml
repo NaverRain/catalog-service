@@ -22,24 +22,25 @@ jobs:
           cache: gradle
 
       - name: Build with Gradle
+        working-directory: catalog-service
         run: |
           chmod +x gradlew
           ./gradlew clean build -Dspring.profiles.active=integration -Dspring.cloud.config.enabled=false
 
       - name: List build artifacts
-        run: ls -R ${{ github.workspace }}/build/libs
+        run: ls -R ${{ github.workspace }}/catalog-service/build/libs
 
       - name: Run grype scanner
         run: |
           touch ${{ github.workspace }}/scan-results.sarif
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b . v0.74.4
-          ./grype dir:${{ github.workspace }}/build/libs -o sarif > ${{ github.workspace }}/scan-results.sarif || true
+          ./grype dir:${{ github.workspace }}/catalog-service/build/libs -o sarif > ${{ github.workspace }}/scan-results.sarif || true
 
       - name: Debug SARIF file
         if: always()
         run: |
           echo "==== build/libs content ===="
-          ls -l ${{ github.workspace }}/build/libs || true
+          ls -l ${{ github.workspace }}/catalog-service/build/libs || true
           echo "==== SARIF file ===="
           ls -l ${{ github.workspace }}/scan-results.sarif || true
           echo "==== SARIF preview ===="
