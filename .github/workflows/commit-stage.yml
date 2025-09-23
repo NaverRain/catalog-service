@@ -28,6 +28,14 @@ jobs:
           echo "=== Searching for JARs recursively ==="
           find ${{ github.workspace }} -type f -name "*.jar"
 
+      - name: Debug Gradle build
+        run: |
+          echo "=== Gradle tasks run ==="
+          ./gradlew tasks --all | grep build
+          echo "=== Check build outputs ==="
+          find build -maxdepth 3 -type f || true
+
+
       - name: List build artifacts
         run: |
           echo "Root build/libs:"
