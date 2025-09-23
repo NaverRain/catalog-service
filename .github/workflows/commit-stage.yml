@@ -19,7 +19,22 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: gradle
+          # cache: gradle
+
+      - name: Check Gradle version
+        run: |
+          chmod +x gradlew
+          ./gradlew --version
+
+      - name: Force Gradle wrapper download
+        run: |
+          chmod +x gradlew
+          ./gradlew wrapper --gradle-version 8.12.1
+
+      - name: Check Gradle version 2
+        run: |
+          chmod +x gradlew
+          ./gradlew --version
 
       - name: Build with Gradle
         run: |
