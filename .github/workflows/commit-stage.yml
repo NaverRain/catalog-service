@@ -18,14 +18,14 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
           cache: gradle
 
       - name: Build, unit tests and integration tests
         run: |
           chmod +x gradlew
-          # Build without running bootRun, avoid Spring config issues in CI
-          ./gradlew clean build -x test --no-daemon --info || true
+          # Build without running bootRun to avoid Spring config issues in CI
+          ./gradlew clean bootJar -x test --no-daemon --info
           echo "=== Searching for JARs ==="
           find . -type f -name "*.jar"
 
@@ -36,10 +36,9 @@ jobs:
           path: "${{ github.workspace }}"
           fail-build: false
           severity-cutoff: high
-          acs-report-enable: true
 
       - name: Upload vulnerability report
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: success() || failure()
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}
