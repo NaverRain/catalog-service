@@ -24,12 +24,14 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew clean bootJar -Dspring.profiles.active=integration -Dspring.cloud.config.enabled=false
-          echo "=== Searching for jars ==="
-          find . -name "*.jar" || true
+          ./gradlew clean build -x test -Dspring.profiles.active=integration -Dspring.cloud.config.enabled=false
+          echo "=== Searching for JARs recursively ==="
+          find ${{ github.workspace }} -type f -name "*.jar"
 
       - name: List build artifacts
-        run: ls -R ${{ github.workspace }}/build/libs
+        run: |
+          echo "Root build/libs:"
+          ls -l ${{ github.workspace }}/build/libs || true
 
       - name: Run grype scanner
         run: |
@@ -52,3 +54,10 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ github.workspace }}/scan-results.sarif
+
+      - name: Upload JAR artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-service-jar
+          path: build/libs/*.jar
